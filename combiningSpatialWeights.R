@@ -37,8 +37,7 @@ union.nb <- function (nb.obj1, nb.obj2)
 
 
 
-
-
+# this custom function will let us combine nbs of different types
 custom_union.nb <- function (nb.obj1, nb.obj2) 
 {
      if (!inherits(nb.obj1, "nb") | !inherits(nb.obj2, "nb")) {
