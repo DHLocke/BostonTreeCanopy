@@ -36,6 +36,9 @@ union.nb <- function (nb.obj1, nb.obj2)
 
 
 
+
+
+
 custom_union.nb <- function (nb.obj1, nb.obj2) 
 {
      if (!inherits(nb.obj1, "nb") | !inherits(nb.obj2, "nb")) {
@@ -43,12 +46,20 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
      }
      #if (any(attr(nb.obj1, "region.id") != attr(nb.obj2, "region.id"))) {
      #     stop("Both neighbor objects must be \n generated from the same coordinates")
-     }
-     n <- length(nb.obj1)
-     if (n != length(nb.obj2)) 
-          stop("Both arguments must be of same length")
-     if (n < 1) 
-          stop("non-positive number of entities")
+     #}
+     #n <- length(nb.obj1)
+     #if (n != length(nb.obj2)) 
+     #     stop("Both arguments must be of same length")
+     #if (n < 1) 
+     #     stop("non-positive number of entities")
+     
+     length_1 <- length(nb.obj1); idx_1 <- 1:length_1
+     length_2 <- length(nb.obj2); idx_2 <- 1:length_2
+     
+     df_1 <- data.frame(rowNum = idx_1, global_id = attr(nb.obj1, "region.id"))
+     df_2 <- data.frame(rowNum = idx_2, global_id = attr(nb.obj2, "region.id"))
+     
+     
      card1 <- card(nb.obj1)
      card2 <- card(nb.obj2)
      new.nb <- vector(mode = "list", length = n)
@@ -70,3 +81,5 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
      class(new.nb) <- "nb"
      new.nb
 }
+
+custom_union.nb(nb.obj1, nb.obj2)
