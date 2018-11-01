@@ -37,63 +37,31 @@ sp <- as(sf_slim, "Spatial"); class(sp)
 # filter down again to just front yards
 spFront <- sp[sp$YARD == 'Front', ];dim(spFront); dim(sp)/2 #0 
 
+# does subsetting with the method done above maintain the row ids
+rownames(spFront@data)
 
-
-# poly2nb KEEPS THE GLOBAL ID!!
+# build spatial weights matricies to see if this nb-type maintains ids too.
 system.time(nb_Q1 <- poly2nb(spFront[spFront@data$'ID_CBG' == 250251105011,],
                              queen=TRUE))
 summary(nb_Q1); str(nb_Q1)
 
+# because "attr(*, "region.id")" goes higher than the number of elements
+# (523) it appears as though the inital rowname is kept
+
+# make another nb with a different subset
 system.time(nb_Q2 <- poly2nb(spFront[spFront@data$'ID_CBG' == 250251105012,],
                              queen=TRUE))
 summary(nb_Q2); str(nb_Q2)
+
+# again the number of elements 342 is less than some of the region.id's
+# therefore, we assume the original row number is maintained in region.id
+# when subsetting with something like this 
+# spFront[spFront@data$'ID_CBG' == 250251105012,]
 
 # make short cut
 nb.obj1 <- nb_Q1
 nb.obj2 <- nb_Q2
 
 
-
-### end of test, scrpas below
-
-
-
-
-# get centroids as pre-cursor for KNN
-cents <- SpatialPointsDataFrame(coords = coordinates(spFront),
-                                data = spFront@data,
-                                proj4string=CRS("+proj=utm +zone=19 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs"))
-
-
-knn <- knearneigh(cents[cents$'ID_CBG' == 250251105011,],
-           k = 4)
-
-# maintain the associatoin between global ID and the 'region.id" spdep builds
-lt <- cbind(rownames(knn$x), 1:knn$np)
-
-knnOne <- knn2nb(knn)
-
-
-
-knnOne <- knn2nb(knearneigh(cents[cents$'ID_CBG' == 250251105011,],
-                            k = 4))
-
-
-knnTwo <- knn2nb(knearneigh(cents[cents$'ID_CBG' == 250251105012,],
-                            k = 4))
-
-# make short cut
-nb.obj1 <- knnOne
-nb.obj2 <- knnTwo
-
-
-
-
-
-
-
-# what about distance-based neighbors?
-myDist <- 25
-system.time(nb_d<- dnearneigh(cents[cents@data$'ID_CBG' == 250251105011,],
-                              d1=0, d2=myDist)); summary(nb_d)
-# like knearniegh dnearneigh seems to drop the Global ID
+### end of test subsetting, switch to custom.nb function in
+### combiningSpatialWeights.R script
