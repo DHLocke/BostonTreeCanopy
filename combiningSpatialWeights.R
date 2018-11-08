@@ -58,13 +58,16 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
      
      # associating row numbers with region.id (renamed "global_id",
      # which is the row number of the original object before subsetting)
-     df_1 <- data.frame(rowNum = idx_1, global_id = attr(nb.obj1, "region.id"))
-     df_2 <- data.frame(rowNum = idx_2, global_id = attr(nb.obj2, "region.id"))
+     df1 <- data.frame(rowNum = idx_1, global_id = attr(nb.obj1, "region.id"))
+     df2 <- data.frame(rowNum = idx_2, global_id = attr(nb.obj2, "region.id"))
      
      # test for overlap between global_id's
-     unique_globals <- unique(union(df_1$global_id, df_2$global_id))
-     n <- length(unique_globals)
+     combined_df <- data.frame(global_id = unique(union(df_1$global_id, df_2$global_id)))
+     temp <- merge(combined_df, df1, all.x = TRUE, by='global_id')
+     temp2<- merge(temp, df2, all.x = TRUE, by='global_id')
      
+     # length of iterator for loop below
+     n <- nrow(combined_df)
      card1 <- card(nb.obj1) # card returns number of neighbors
      card2 <- card(nb.obj2)
      new.nb <- vector(mode = "list", length = n)
@@ -72,7 +75,7 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
           if (card1[i] == 0) {          # nb.obj1 with no neighs
                if (card2[i] == 0)       # nb.obj2 with no neighs
                     new.nb[[i]] <- 0L   # therefore zero
-               else new.nb[[i]] <- nb.obj2[[i]] # nb.obj1 = 0 and nb.obj2 > 0, therefore take on values of nb.obj2
+               else new.nb[[i]] <- nb.obj2[[i]] # nb.obj1 = 0 AND nb.obj2 > 0, therefore take on values of nb.obj2
           }
           else {                        # nb.obj1 with > 0 neighs
                if (card2[i] == 0)       # AND nb.obj2 > 0
