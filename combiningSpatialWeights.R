@@ -69,15 +69,15 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
      card2 <- card(nb.obj2)
      new.nb <- vector(mode = "list", length = n)
      for (i in 1:n) {
-          if (card1[i] == 0) {
-               if (card2[i] == 0) 
-                    new.nb[[i]] <- 0L
-               else new.nb[[i]] <- nb.obj2[[i]]
+          if (card1[i] == 0) {          # nb.obj1 with no neighs
+               if (card2[i] == 0)       # nb.obj2 with no neighs
+                    new.nb[[i]] <- 0L   # therefore zero
+               else new.nb[[i]] <- nb.obj2[[i]] # nb.obj1 = 0 and nb.obj2 > 0, therefore take on values of nb.obj2
           }
-          else {
-               if (card2[i] == 0) 
-                    new.nb[[i]] <- nb.obj1[[i]]
-               else new.nb[[i]] <- sort(union(nb.obj1[[i]], nb.obj2[[i]]))
+          else {                        # nb.obj1 with > 0 neighs
+               if (card2[i] == 0)       # AND nb.obj2 > 0
+                    new.nb[[i]] <- nb.obj1[[i]] # herefore takes on the thoes neighs
+               else new.nb[[i]] <- sort(union(nb.obj1[[i]], nb.obj2[[i]])) # fouth and final case
           }
      }
      attr(new.nb, "region.id") <- attr(nb.obj1, "region.id")
