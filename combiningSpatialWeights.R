@@ -76,6 +76,7 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
           if sum(is.na(combined_df[i,2:3])) > 0 {
                idx <- !is.na(combined_df[i,2:3])
                combined_df[i, c(FALSE,idx)]
+               # ended here
                new.nb[[i]] <- 
                     
           }
