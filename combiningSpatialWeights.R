@@ -52,14 +52,20 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
      #if (n < 1) 
      #     stop("non-positive number of entities")
      
+     # generating row numbers
      length_1 <- length(nb.obj1); idx_1 <- 1:length_1
      length_2 <- length(nb.obj2); idx_2 <- 1:length_2
      
+     # associating row numbers with region.id (renamed "global_id",
+     # which is the row number of the original object before subsetting)
      df_1 <- data.frame(rowNum = idx_1, global_id = attr(nb.obj1, "region.id"))
      df_2 <- data.frame(rowNum = idx_2, global_id = attr(nb.obj2, "region.id"))
      
+     # test for overlap between global_id's
+     unique_globals <- unique(union(df_1$global_id, df_2$global_id))
+     n <- length(unique_globals)
      
-     card1 <- card(nb.obj1)
+     card1 <- card(nb.obj1) # card returns number of neighbors
      card2 <- card(nb.obj2)
      new.nb <- vector(mode = "list", length = n)
      for (i in 1:n) {
@@ -81,4 +87,8 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
      new.nb
 }
 
-custom_union.nb(nb.obj1, nb.obj2)
+new_custom_nb <- custom_union.nb(nb.obj1, nb.obj2)
+
+listw <- nb2listw(new_custom_nb)
+
+
