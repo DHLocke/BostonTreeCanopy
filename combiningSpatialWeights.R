@@ -78,7 +78,15 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
           {
                # sel_feature is a selected spatial feature
                sel_feature <- combined_df[i, 2]
-               new.nb[[i]] <- nb.obj1[[sel_feature]]
+               
+               # temporary nb object
+               temp.nb1 <- nb.obj1[[sel_feature]]
+               
+               
+               new.nb[[i]] <- nb.obj1[[sel_feature]] # this wont work bc
+                                                       # the correct feature needs to be
+                                                       # selected based on idx
+                                                       # translate back to new neighborh list
           }
           
           # case 2: idx_2 is not null (nb.obj2 contains relevant neighbors),
@@ -86,7 +94,16 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
           if !is.na(combined_df[i, 3])
           {
                sel_feature <- combined_df[i, 3]
-               new.nb[[i]] <- nb.obj2[[sel_feature]]
+               
+               # temporary nb object
+               temp.nb2 <- nb.obj2[[sel_feature]]
+               
+               # use the look-up to select the row
+               select_row <- which(combined_df[, 3] == temp.nb2)
+               
+               
+               new.nb[[i]] <- select_row
+               
           }
           
           # case 3:  both nb's have neighs
@@ -110,7 +127,7 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
                     new.nb[[i]] <- nb.obj2[[sel_feature[2]]
                }
                if (card1 > 0 & card2 > 0){
-                    new.nb[[i]] <- sort(union(nb.obj2[[sel_feature[2]], nb.obj1[[sel_feature[1]]
+                    new.nb[[i]] <- sort(union(nb.obj2[[sel_feature[2]], nb.obj1[[sel_feature[1]]))
           }
                else new.nb[[i]] <- nb.obj2[[i]]   # nb.obj1 = 0 AND nb.obj2 > 0, therefore take on values of nb.obj2
                
