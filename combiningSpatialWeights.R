@@ -69,8 +69,6 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
      
      # length of iterator for loop below
      n <- nrow(combined_df)
-     card1 <- card(nb.obj1) # card returns number of neighbors
-     card2 <- card(nb.obj2)
      new.nb <- vector(mode = "list", length = n)
      for (i in 1:n) {
           
@@ -87,7 +85,6 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
           # idx_1 does not
           if !is.na(combined_df[i, 3])
           {
-               # sel_feature is a selected spatial feature
                sel_feature <- combined_df[i, 3]
                new.nb[[i]] <- nb.obj2[[sel_feature]]
           }
@@ -96,12 +93,28 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
           # this is designed to handle cases of overlapping nb lists
           # same object that *might* have different neighbors
           if !is.na(combined_df[i, 2] & !is.na(combined_df[i, 3])
-                    {
-                         
+          {
+               sel_feature <- combined_df[i, 2:3]
+               
+               # we are extracting the number of neighbors per selelcted feature
+               # they are the same selected feature, but they *may* have different neighbors
+               # if they have a different number of neighbors, then they do not have the same neighbors exactly
+               card1 <- card(nb.obj1[[sel_feature[1]]]) # these are the same spatial features, they *may* have different neighbors though
+               card2 <- card(nb.obj2[[sel_feature[2]]]) # these are the same spatial features, they *may* have different neighbors though
+               
+               # compare nb.objx by the cardinalities, and combine
+               if (card1 == 0 & card2 == 0){      # both empty
+                    new.nb[[i]] <- 0L             # therefore zero
+               }
+               if (card1 == 0 & card2 > 0){
+                    new.nb[[i]] <- nb.obj2[[sel_feature[2]]
+               }
+               if (card1 > 0 & card2 > 0){
+                    new.nb[[i]] <- sort(union(nb.obj2[[sel_feature[2]], nb.obj1[[sel_feature[1]]
           }
-          
-                    new.nb[[i]] <- union
-                    
+               else new.nb[[i]] <- nb.obj2[[i]]   # nb.obj1 = 0 AND nb.obj2 > 0, therefore take on values of nb.obj2
+               
+          }
           }
           # if (card1[i] == 0) {        # nb.obj1 with no neighs
                if (card2[i] == 0)       # nb.obj2 with no neighs
