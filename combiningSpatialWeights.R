@@ -66,21 +66,44 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
      combined_df <- merge(combined_df, df1, all.x = TRUE, by='global_id')
      combined_df <- merge(combined_df, df2, all.x = TRUE, by='global_id')
      names(combined_df)[2:3] <- c('idx_1', 'idx_2')
-          
+     
      # length of iterator for loop below
      n <- nrow(combined_df)
      card1 <- card(nb.obj1) # card returns number of neighbors
      card2 <- card(nb.obj2)
      new.nb <- vector(mode = "list", length = n)
      for (i in 1:n) {
-          if sum(is.na(combined_df[i,2:3])) > 0 {
-               idx <- !is.na(combined_df[i,2:3])
-               combined_df[i, c(FALSE,idx)]
-               # ended here
-               new.nb[[i]] <- 
+          
+          # case 1: idx_1 is not null (nb.obj1 contains relevant neighbors),
+          # idx_2 does not
+          if !is.na(combined_df[i, 2])
+          {
+               # sel_feature is a selected spatial feature
+               sel_feature <- combined_df[i, 2]
+               new.nb[[i]] <- nb.obj1[[sel_feature]]
+          }
+          
+          # case 2: idx_2 is not null (nb.obj2 contains relevant neighbors),
+          # idx_1 does not
+          if !is.na(combined_df[i, 3])
+          {
+               # sel_feature is a selected spatial feature
+               sel_feature <- combined_df[i, 3]
+               new.nb[[i]] <- nb.obj2[[sel_feature]]
+          }
+          
+          # case 3:  both nb's have neighs
+          # this is designed to handle cases of overlapping nb lists
+          # same object that *might* have different neighbors
+          if !is.na(combined_df[i, 2] & !is.na(combined_df[i, 3])
+                    {
+                         
+          }
+          
+                    new.nb[[i]] <- union
                     
           }
-          # if (card1[i] == 0) {          # nb.obj1 with no neighs
+          # if (card1[i] == 0) {        # nb.obj1 with no neighs
                if (card2[i] == 0)       # nb.obj2 with no neighs
                     new.nb[[i]] <- 0L   # therefore zero
                else new.nb[[i]] <- nb.obj2[[i]] # nb.obj1 = 0 AND nb.obj2 > 0, therefore take on values of nb.obj2
