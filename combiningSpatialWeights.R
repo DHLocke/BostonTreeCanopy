@@ -34,7 +34,7 @@ union.nb <- function (nb.obj1, nb.obj2)
      new.nb
 }
 
-
+union.nb(nb.obj1, nb.obj2) # fails
 
 
 # this custom function will let us combine nbs of different types
