@@ -83,17 +83,18 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
                # temporary nb object
                temp.nb1 <- nb.obj1[[sel_feature]]
                
+               # use the look-up to select the row's global ID
+               select_row <- which(combined_df[, 2] == temp.nb1)
                
-               new.nb[[i]] <- nb.obj1[[sel_feature]] # this wont work bc
-                                                       # the correct feature needs to be
-                                                       # selected based on idx
-                                                       # translate back to new neighborh list
+               
+               new.nb[[i]] <- select_row
           }
           
           # case 2: idx_2 is not null (nb.obj2 contains relevant neighbors),
           # idx_1 does not
           if !is.na(combined_df[i, 3])
           {
+               # sel_feature is a selected spatial feature
                sel_feature <- combined_df[i, 3]
                
                # temporary nb object
@@ -112,21 +113,57 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
           # same object that *might* have different neighbors
           if !is.na(combined_df[i, 2] & !is.na(combined_df[i, 3])
           {
-               sel_feature <- combined_df[i, 2:3]
+               sel_feature <- as.integer(combined_df[i, 2:3])
                
                # we are extracting the number of neighbors per selelcted feature
                # they are the same selected feature, but they *may* have different neighbors
                # if they have a different number of neighbors, then they do not have the same neighbors exactly
-               card1 <- card(nb.obj1[[sel_feature[1]]]) # these are the same spatial features, they *may* have different neighbors though
-               card2 <- card(nb.obj2[[sel_feature[2]]]) # these are the same spatial features, they *may* have different neighbors though
+               
+               card1 <- length(nb.obj1[sel_feature[1]]) # these are the same spatial features, they *may* have different neighbors though
+               card2 <- length(nb.obj1[sel_feature[2]]) # these are the same spatial features, they *may* have different neighbors though
                
                # compare nb.objx by the cardinalities, and combine
                if (card1 == 0 & card2 == 0){      # both empty
                     new.nb[[i]] <- 0L             # therefore zero
                }
                if (card1 == 0 & card2 > 0){
-                    new.nb[[i]] <- nb.obj2[[sel_feature[2]]
+                    
+                    # grab the neighbors from the second object
+                    temp.nb2 <- nb.obj2[[sel_feature[2]]]
+                    
+                    # use the look-up to select the row
+                    select_row <- which(combined_df[, 3] == temp.nb2)
+                    
+                    # push the canges
+                    new.nb[[i]] <- select_row
+
                }
+               if (card1 >0 & card2 == 0){
+                    
+                    # grab the neighbors from the second object
+                    temp.nb1 <- nb.obj1[[sel_feature[1]]]
+                    
+                    # use the look-up to select the row
+                    select_row <- which(combined_df[, 2] == temp.nb1)
+                    
+                    # push the canges
+                    new.nb[[i]] <- select_row
+                    
+               }
+               if (card1 >0 & card2 >0){
+                    
+                    # grab the neighbors from the second object
+                    temp.nb1 <- nb.obj1[[sel_feature[1]]]
+                    
+                    # use the look-up to select the row
+                    select_row <- which(combined_df[, 2] == temp.nb1)
+                    
+                    # push the canges
+                    new.nb[[i]] <- select_row
+                    
+               }
+               
+               
                if (card1 > 0 & card2 > 0){
                     new.nb[[i]] <- sort(union(nb.obj2[[sel_feature[2]], nb.obj1[[sel_feature[1]]))
           }
@@ -157,3 +194,7 @@ new_custom_nb <- custom_union.nb(nb.obj1, nb.obj2)
 listw <- nb2listw(new_custom_nb)
 
 
+
+# make a fake overlapping set
+combined_df[c(1:6),2] <- c(27, 333, 334, 336, 335, 339)
+head(combined_df)
