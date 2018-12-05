@@ -152,15 +152,21 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
                }
                if (card1 >0 & card2 >0){
                     
-                    # grab the neighbors from the second object
-                    temp.nb1 <- nb.obj1[[sel_feature[1]]]
+                    # sel_feature is a selected spatial feature
+                    sel_feature1 <- combined_df[i, 2]
+                    sel_feature2 <- combined_df[i, 3]
                     
-                    # use the look-up to select the row
-                    select_row <- which(combined_df[, 2] == temp.nb1)
+                    # temporary nb object
+                    temp.nb1 <- nb.obj1[[sel_feature1[1]]]
+                    temp.nb2 <- nb.obj2[[sel_feature2[2]]]
                     
-                    # push the canges
-                    new.nb[[i]] <- select_row
+                    # use the look-up to select the row's global ID
+                    select_row1 <- which(combined_df[, 2] == temp.nb1)
+                    select_row2 <- which(combined_df[, 3] == temp.nb2)
                     
+                    combined_select_row <- sort(union(select_row1, select_row2))
+                    
+                    new.nb[[i]] <- combined_select_row
                }
                
                
