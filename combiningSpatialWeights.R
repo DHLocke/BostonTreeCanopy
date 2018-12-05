@@ -169,30 +169,12 @@ custom_union.nb <- function (nb.obj1, nb.obj2)
                     new.nb[[i]] <- combined_select_row
                }
                
-               
-               if (card1 > 0 & card2 > 0){
-                    new.nb[[i]] <- sort(union(nb.obj2[[sel_feature[2]], nb.obj1[[sel_feature[1]]))
-          }
-               else new.nb[[i]] <- nb.obj2[[i]]   # nb.obj1 = 0 AND nb.obj2 > 0, therefore take on values of nb.obj2
-               
-          }
-          }
-          # if (card1[i] == 0) {        # nb.obj1 with no neighs
-               if (card2[i] == 0)       # nb.obj2 with no neighs
-                    new.nb[[i]] <- 0L   # therefore zero
-               else new.nb[[i]] <- nb.obj2[[i]] # nb.obj1 = 0 AND nb.obj2 > 0, therefore take on values of nb.obj2
-          }
-          else {                        # nb.obj1 with > 0 neighs
-               if (card2[i] == 0)       # AND nb.obj2 > 0
-                    new.nb[[i]] <- nb.obj1[[i]] # herefore takes on the thoes neighs
-               else new.nb[[i]] <- sort(union(nb.obj1[[i]], nb.obj2[[i]])) # fouth and final case
-          }
-     }
-     attr(new.nb, "region.id") <- attr(nb.obj1, "region.id")
+     attr(new.nb, "region.id") <- combined_df$global_id
      attr(new.nb, "type") <- paste("union(", attr(nb.obj1, "type"), 
                                    ",", attr(nb.obj2, "type"), ")")
      class(new.nb) <- "nb"
      new.nb
+     return(new.nb)
 }
 
 new_custom_nb <- custom_union.nb(nb.obj1, nb.obj2)
